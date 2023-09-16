@@ -1,0 +1,19 @@
+extends layout/login-layout.pug
+
+block content
+    .loginContainer
+        h1 Login
+        form#loginForm(action="/auth/login", method="post" onsubmit="event.preventDefault(); login();")
+            input#email(type="text", name="email", placeholder="Email", required="")
+            input#password(type="text", name="password", placeholder="Password", required="")
+            input(type="submit", value="Login")
+        a(href="/register") Need an account? Register here.
+
+    script.
+        function login() {
+            let username = document.getElementById("email").value,
+                password = document.getElementById("password").value,
+                loginForm = document.getElementById("loginForm");
+
+            loginForm.submit();
+        }

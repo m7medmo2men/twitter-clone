@@ -1,0 +1,9 @@
+mixin createPostForm(user)
+    .postFormContainer
+        .userImageContainer
+            img(src=user.profilePicture, alt="User's Profile Picture")
+        .textAreaContainer
+            textarea#postTextArea(placeholder="What's on your mind?")
+            .buttonContainer
+                button#submitPostButton(disabled="") Post 
+        
