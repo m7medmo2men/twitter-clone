@@ -15,10 +15,9 @@ export class AuthService {
       include: {
         likedPosts: true,
         Posts: true,
+        retweetedPosts: true,
       },
     });
-
-    console.log(loginDto['Email']);
 
     if (!user) throw new BadRequestException('Email/Password is incorrect');
 

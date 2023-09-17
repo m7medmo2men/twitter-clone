@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UserService } from 'src/users/users.service';
 
 @Controller('posts')
 @UsePipes(
@@ -21,11 +22,19 @@ import { CreatePostDto } from './dto/create-post.dto';
   }),
 )
 export class PostController {
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private userService: UserService,
+  ) {}
 
   @Get()
   getAllPosts() {
     return this.postService.getAllPosts();
+  }
+
+  @Get('/:postId')
+  getPost(@Param('postId', ParseIntPipe) postId: number) {
+    return this.postService.getPost(postId);
   }
 
   @Post()
@@ -59,5 +68,15 @@ export class PostController {
       (post) => post.id !== postId,
     );
     return this.postService.unlikePost(postId, userId);
+  }
+
+  @Post('/:postId/retweet')
+  async retweetPost(
+    @Param('postId', ParseIntPipe) postId: number,
+    @Session() session: Record<string, any>,
+  ) {
+    const userId = 1;
+    session.user = await this.userService.getUser(userId);
+    return this.postService.retweetPost(postId, userId);
   }
 }

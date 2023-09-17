@@ -12,31 +12,35 @@ datasource db {
 
 
 model User {
-  id        Int      @id @default(autoincrement())
-  firstName String
-  lastName  String
-  username  String   @unique
-  email     String   @unique
-  password  String
-  profilePicture String @default("/images/default.png")
+  id              Int      @id @default(autoincrement())
+  firstName       String
+  lastName        String
+  username        String   @unique
+  email           String   @unique
+  password        String
+  profilePicture  String   @default("/images/default.png")
   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  Posts      Post[]
-  likedPosts Post[]    @relation("PostLikes")
+  Posts          Post[]
+  likedPosts     Post[]    @relation("PostLikes")
+  retweetedPosts Post[]    @relation("PostRetweets")
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  content   String
-  postedBy    User     @relation(fields: [userId], references: [id])
-  userId  Int
-  pinned   Boolean  @default(false)
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  content       String
+  postedBy      User     @relation(fields: [userId], references: [id])
+  pinned        Boolean  @default(false)
+  userId        Int
+  parentTweetId Int?
 
-  // retweetPost Post? @relation("Retweets", fields: [retweetId], references: [id])
-  likedBy   User[]   @relation("PostLikes")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  originalTweet     Post?   @relation("Retweets", fields: [parentTweetId], references: [id])
+  retweets          Post[]  @relation("Retweets")
+  likedBy           User[]  @relation("PostLikes")
+  retweetedBy       User[]  @relation("PostRetweets") // Could be named retweetedUsers
 }
