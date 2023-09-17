@@ -225,3 +225,13 @@ button span {
   color: var(--greyText);
   margin-bottom: 5px;
 }
+
+.modal .postFormContainer {
+  border: none;
+  padding: 0;
+  padding-top: var(--spacing);
+}
+
+.modal .post {
+  padding: 0 0 var(--spacing) 0;
+}

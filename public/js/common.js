@@ -1,5 +1,7 @@
 const submitButton = document.getElementById('submitPostButton');
+const submitReplyButton = document.getElementById('submitReplyButton');
 const textArea = document.getElementById('postTextArea');
+const replytextArea = document.getElementById('replyTextArea');
 const likeButton = document.querySelector('.likeButton');
 
 textArea.addEventListener('input', () => {
@@ -7,6 +9,14 @@ textArea.addEventListener('input', () => {
     submitButton.disabled = false;
   } else {
     submitButton.disabled = true;
+  }
+});
+
+replytextArea.addEventListener('input', () => {
+  if (replytextArea.value.trim().length > 0) {
+    submitReplyButton.disabled = false;
+  } else {
+    submitReplyButton.disabled = true;
   }
 });
 
@@ -34,9 +44,21 @@ submitButton.addEventListener('click', () => {
     .catch((err) => console.log(err));
 });
 
-// likeButton.addEventListener('click', () => {
-//   alert('You clicked the like button');
-// });
+$('#replyModal').on('show.bs.modal', (event) => {
+  let button = $(event.relatedTarget);
+  let postId = getPostIdFromElemet(button);
+
+  // Attach postId to submitReplyButton so it can be used to submit the reply.
+  $('#submitReplyButton').data('id', postId);
+
+  $.get('/posts/' + postId, (results) => {
+    showPosts([results], $('#originalPostContainer'));
+  });
+});
+
+$('#replyModal').on('hidden.bs.modal', (event) =>
+  $('#originalPostContainer').html(''),
+);
 
 $(document).on('click', '.likeButton', (event) => {
   const element = $(event.target);
@@ -141,7 +163,9 @@ function createPostHtml(postData) {
           </div>
           <div class="postFooter">
             <div class="postButtonContainer">
-              <button><i class="far fa-comment"></i></button>
+              <button data-toggle='modal' data-target='#replyModal'>
+                <i class='far fa-comment'></i>
+              </button>
             </div>
             <div class="postButtonContainer green">
               <button class="retweetButton ${
@@ -192,6 +216,19 @@ function timeDifference(current, previous) {
     return Math.round(elapsed / msPerMonth) + ' months ago';
   } else {
     return Math.round(elapsed / msPerYear) + ' years ago';
+  }
+}
+
+function showPosts(results, document) {
+  document.html('');
+
+  results.forEach((result) => {
+    let html = createPostHtml(result);
+    document.append(html);
+  });
+
+  if (results.length == 0) {
+    document.append('<span class="noResults">Nothing to show.</span>');
   }
 }
 

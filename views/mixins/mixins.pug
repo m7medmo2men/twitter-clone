@@ -6,4 +6,23 @@ mixin createPostForm(user)
             textarea#postTextArea(placeholder="What's on your mind?")
             .buttonContainer
                 button#submitPostButton(disabled="") Post 
-        
+
+
+mixin createReplyModal(user)
+    #replyModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='replyModalLabel', aria-hidden='true')
+        .modal-dialog(role='document')
+            .modal-content
+                .modal-header
+                    h5#replyModalLabel.modal-title Reply
+                    button.close(type='button', data-dismiss='modal', aria-label='Close')
+                    span(aria-hidden='true') &times;
+                .modal-body
+                    #originalPostContainer
+                    .postFormContainer
+                        .userImageContainer
+                            img(src=user.profilePicture, alt="User's Profile Picture")
+                        .textAreaContainer
+                            textarea#replyTextArea(placeholder="Reply to this post...")
+                .modal-footer
+                    button.btn.btn-secondary(type='button', data-dismiss='modal') Close
+                    button#submitReplyButton.btn.btn-primary(type='button', disabled="") Reply
