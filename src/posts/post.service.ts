@@ -3,6 +3,7 @@ import { PrismaService } from 'src/db/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Filter } from 'src/types/Filter';
 import { Post } from './types/post.type';
+import { PostReplyDto } from './dto/reply-post.dto';
 
 @Injectable()
 export class PostService {
@@ -15,6 +16,13 @@ export class PostService {
         likedBy: true,
         retweetedBy: true,
         originalTweet: {
+          include: {
+            postedBy: true,
+            likedBy: true,
+            retweetedBy: true,
+          },
+        },
+        replyedFrom: {
           include: {
             postedBy: true,
             likedBy: true,
@@ -202,6 +210,25 @@ export class PostService {
         retweet,
       };
     }
+  }
+
+  async replyToPost(
+    postId: number,
+    userId: number,
+    createPostDto: CreatePostDto,
+  ) {
+    const reply = await this.prisma.post.create({
+      data: {
+        content: createPostDto.content,
+        userId,
+        replyToId: postId,
+      },
+      include: {
+        replyedFrom: true,
+      },
+    });
+
+    return reply;
   }
 
   async deletePost(postId: number) {

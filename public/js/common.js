@@ -44,6 +44,27 @@ submitButton.addEventListener('click', () => {
     .catch((err) => console.log(err));
 });
 
+submitReplyButton.addEventListener('click', () => {
+  const postId = $('#submitReplyButton').data().id;
+  let payload = {
+    content: $('#replyTextArea').val(),
+    replyToId: postId,
+  };
+
+  fetch(`/posts/${postId}/reply`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((err) => console.log(err));
+});
+
 $('#replyModal').on('show.bs.modal', (event) => {
   let button = $(event.relatedTarget);
   let postId = getPostIdFromElemet(button);
@@ -141,6 +162,16 @@ function createPostHtml(postData) {
                           Retweeted By  <a href="/profile/${retweetedBy}"> @${retweetedBy}</a> 
                         </span>`;
 
+  let replyBlockText = '';
+  let isReply = postData.replyToId !== null;
+  let postedByUsername = isReply ? postData.replyedFrom.postedBy.username : '';
+
+  if (isReply) {
+    replyBlockText = `<div class="replyBlock">
+                        Replying to <a href='/profile/${postedByUsername}'>@${postedByUsername}</a>
+                      </div>`;
+  }
+
   return `
     <div class="post" data-id="${postData.id}">
       <div class="retweetBlock">
@@ -158,6 +189,7 @@ function createPostHtml(postData) {
             <span class="username">@${postData.postedBy.username}</span>
             <span class="date">${postDate}</span>
           </div>
+          ${replyBlockText}
           <div class="postBody">
             <span>${postData.content}</span>
           </div>

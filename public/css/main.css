@@ -235,3 +235,12 @@ button span {
 .modal .post {
   padding: 0 0 var(--spacing) 0;
 }
+
+.replyBlock {
+  margin-bottom: 5px;
+  font-size: 15px;
+}
+
+.replyBlock a {
+  color: var(--blue);
+}

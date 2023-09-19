@@ -14,6 +14,7 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from 'src/users/users.service';
+import { PostReplyDto } from './dto/reply-post.dto';
 
 @Controller('posts')
 @UsePipes(
@@ -75,8 +76,18 @@ export class PostController {
     @Param('postId', ParseIntPipe) postId: number,
     @Session() session: Record<string, any>,
   ) {
-    const userId = 1;
+    const userId = session.user.id;
     session.user = await this.userService.getUser(userId);
     return this.postService.retweetPost(postId, userId);
+  }
+
+  @Post('/:postId/reply')
+  async replyToPost(
+    @Param('postId', ParseIntPipe) postId: number,
+    @Body() postReplyDto: CreatePostDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const userId = session.user.id;
+    return this.postService.replyToPost(postId, userId, postReplyDto);
   }
 }
