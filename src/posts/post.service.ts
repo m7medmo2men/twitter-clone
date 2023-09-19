@@ -3,7 +3,6 @@ import { PrismaService } from 'src/db/prisma.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Filter } from 'src/types/Filter';
 import { Post } from './types/post.type';
-import { PostReplyDto } from './dto/reply-post.dto';
 
 @Injectable()
 export class PostService {

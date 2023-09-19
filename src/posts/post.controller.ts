@@ -14,7 +14,6 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from 'src/users/users.service';
-import { PostReplyDto } from './dto/reply-post.dto';
 
 @Controller('posts')
 @UsePipes(
