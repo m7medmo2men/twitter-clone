@@ -195,13 +195,6 @@ export class PostService {
   }
 
   async createPost(createPostDto: CreatePostDto, userId: number) {
-    // const retweetedBy = retweet
-    //   ? {
-    //       connect: {
-    //         id: userId,
-    //       },
-    //     }
-    //   : undefined;
 
     const post = await this.prisma.post.create({
       data: {
@@ -213,6 +206,7 @@ export class PostService {
         postedBy: true,
         likedBy: true,
         retweetedBy: true,
+        ...this.tweetStats,
       },
     });
 

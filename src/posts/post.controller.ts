@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -47,6 +48,15 @@ export class PostController {
     return this.postService.createPost(createPostDto, userId);
   }
 
+  @Delete('/:postId')
+  async deletePost(
+    @Param('postId', ParseIntPipe) postId: number,
+  ) {
+    const deletedPost = await this.postService.deletePost(postId);
+    return deletedPost;
+  }
+
+
   @Put('/:postId/like')
   async likePost(
     @Param('postId', ParseIntPipe) postId: number,
@@ -57,7 +67,7 @@ export class PostController {
     session.user.likedPosts.push(postData);
     return postData;
   }
-
+ 
   @Put('/:postId/unlike')
   unlikePost(
     @Param('postId', ParseIntPipe) postId: number,

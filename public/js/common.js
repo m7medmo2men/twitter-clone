@@ -44,8 +44,10 @@ submitButton.addEventListener('click', () => {
       const postHtml = createPostHtml(data);
       const postsContainer = document.querySelector('.postsContainer');
       postsContainer.insertAdjacentHTML('afterbegin', postHtml);
-      $('#postTextArea').val() = '';
-      $('#submitPostButton').disabled = true;
+      // $('#postTextArea').val('');
+      // $('#submitPostButton').disabled = true;
+      textArea.value = '';
+      submitButton.disabled = true;
     })
     .catch((err) => console.log(err));
 });
@@ -88,6 +90,25 @@ $('#replyModal').on('show.bs.modal', (event) => {
 $('#replyModal').on('hidden.bs.modal', (event) =>
   $('#originalPostContainer').html(''),
 );
+
+$('#deletePostModal').on('show.bs.modal', (event) => {
+  let button = $(event.relatedTarget);
+  let postId = getPostIdFromElemet(button);
+  $('#deletePostButton').data('id', postId);
+});
+
+$(document).on('click', '#deletePostButton', (event) => {
+  const postId = $(event.target).data('id');
+
+  fetch(`/api/posts/${postId}`, {
+    method: 'DELETE',
+  }).then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      location.reload();
+  }).catch((err) => console.log(err));
+
+})
 
 $(document).on('click', '.likeButton', (event) => {
   const element = $(event.target);
@@ -148,21 +169,9 @@ $(document).on('click', '.post', (event) => {
   if (postId === undefined) return;
 
   if (!element.is('button')) window.location.href = '/posts/' + postId;
-  // fetch(`/api/posts/${postId}/retweet`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  // })
-  //   .then((response) => response.json())
-  //   .then((postData) => {
-  //     console.log('AFTER RETWEET/UNRETWEET', postData);
-  //     console.log(userLoggedIn.retweetedPosts);
-  //     element.toggleClass('active');
-  //     element.find('span').text(postData.retweetedBy.length || '');
-  //   })
-  //   .catch((err) => console.log(err));
 });
+
+
 
 function getPostIdFromElemet(element) {
   const isRoot = element.hasClass('post');
@@ -206,6 +215,11 @@ function createPostHtml(postData, largeFont = false) {
                       </div>`;
   }
 
+  let buttons = '';
+  if (postData.postedBy.id == userLoggedIn.id) {
+    buttons = `<button data-id=${postData.id} data-toggle='modal' data-target='#deletePostModal'> <i class='fas fa-times'></i> </button>`;
+  }
+
   return `
     <div class="post ${largeClass}" data-id="${postData.id}">
       <div class="retweetBlock">
@@ -222,6 +236,7 @@ function createPostHtml(postData, largeFont = false) {
             }" class="displayName">${fullName}</a>
             <span class="username">@${postData.postedBy.username}</span>
             <span class="date">${postDate}</span>
+            ${buttons}
           </div>
           ${replyBlockText}
           <div class="postBody">
