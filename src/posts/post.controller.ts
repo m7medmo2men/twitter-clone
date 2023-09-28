@@ -15,7 +15,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from 'src/users/users.service';
 
-@Controller('posts')
+@Controller('api/posts')
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
@@ -29,7 +29,7 @@ export class PostController {
 
   @Get()
   getAllPosts() {
-    return this.postService.getAllPosts();
+    return this.postService.getAllPostsV2({}, 1);
   }
 
   @Get('/:postId')

@@ -8,4 +8,8 @@ export class CreatePostDto {
   @IsOptional()
   @IsInt()
   parentTweetId?: number;
+  
+  @IsOptional()
+  @IsInt()
+  replyToId?: number;
 }
