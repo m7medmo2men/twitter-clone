@@ -134,6 +134,16 @@ export class PostService {
     }, 1);
 
     let foundPost = post[0];
+
+    let replies = await this.getAllPostsV2({
+      where: {
+        replyToId: postId,
+      }
+    })
+
+    // @ts-ignore
+    foundPost.replies = replies;
+
     return foundPost;
 
     // const post = await this.prisma.post.findUnique({

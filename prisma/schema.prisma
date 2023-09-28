@@ -31,7 +31,6 @@ model User {
 model Post {
   id            Int      @id @default(autoincrement())
   content       String
-  postedBy      User     @relation(fields: [userId], references: [id])
   pinned        Boolean  @default(false)
   userId        Int
   parentTweetId Int?  // Used For Retweets
@@ -46,4 +45,5 @@ model Post {
   replys            Post[]  @relation("Replys")
   likedBy           User[]  @relation("PostLikes")
   retweetedBy       User[]  @relation("PostRetweets") // Could be named retweetedUsers
+  postedBy          User     @relation(fields: [userId], references: [id])
 }
