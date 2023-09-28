@@ -4,8 +4,11 @@ const textArea = document.getElementById('postTextArea');
 const replytextArea = document.getElementById('replyTextArea');
 const likeButton = document.querySelector('.likeButton');
 
+// $('#postTextArea').keyup(function (event) {
 textArea.addEventListener('input', () => {
-  if (textArea.value.trim().length > 0) {
+  // let textAreaValue = $('#postTextArea').val();
+  let textAreaValue = textArea.value.trim();
+  if (textAreaValue.length > 0) {
     submitButton.disabled = false;
   } else {
     submitButton.disabled = true;
@@ -20,13 +23,16 @@ replytextArea.addEventListener('input', () => {
   }
 });
 
+
+// $('#submitPostButton').click(() => {
 submitButton.addEventListener('click', () => {
-  const content = textArea.value;
+  // const content = $('#postTextArea').val();
+  const content = textArea.value.trim();
   const data = {
     content: content,
   };
 
-  fetch('/posts', {
+  fetch('/api/posts', {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -38,8 +44,8 @@ submitButton.addEventListener('click', () => {
       const postHtml = createPostHtml(data);
       const postsContainer = document.querySelector('.postsContainer');
       postsContainer.insertAdjacentHTML('afterbegin', postHtml);
-      textArea.value = '';
-      submitButton.disabled = true;
+      $('#postTextArea').val() = '';
+      $('#submitPostButton').disabled = true;
     })
     .catch((err) => console.log(err));
 });
@@ -51,7 +57,7 @@ submitReplyButton.addEventListener('click', () => {
     replyToId: postId,
   };
 
-  fetch(`/posts/${postId}/reply`, {
+  fetch(`/api/posts/${postId}/reply`, {
     method: 'POST',
     body: JSON.stringify(payload),
     headers: {
@@ -65,6 +71,7 @@ submitReplyButton.addEventListener('click', () => {
     .catch((err) => console.log(err));
 });
 
+// $(document).on('show.bs.modal', '#replyModal', (event) => {
 $('#replyModal').on('show.bs.modal', (event) => {
   let button = $(event.relatedTarget);
   let postId = getPostIdFromElemet(button);
@@ -72,7 +79,8 @@ $('#replyModal').on('show.bs.modal', (event) => {
   // Attach postId to submitReplyButton so it can be used to submit the reply.
   $('#submitReplyButton').data('id', postId);
 
-  $.get('/posts/' + postId, (results) => {
+  $.get('/api/posts/' + postId, (results) => {
+    // showPosts([results.postData], $('#originalPostContainer'));
     showPosts([results], $('#originalPostContainer'));
   });
 });
@@ -89,7 +97,7 @@ $(document).on('click', '.likeButton', (event) => {
 
   const isLiked = userLoggedIn?.likedPosts?.some((post) => post.id === postId);
 
-  fetch(`/posts/${postId}/${isLiked ? 'unlike' : 'like'}`, {
+  fetch(`/api/posts/${postId}/${isLiked ? 'unlike' : 'like'}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -117,7 +125,7 @@ $(document).on('click', '.retweetButton', (event) => {
 
   if (postId === undefined) return;
 
-  fetch(`/posts/${postId}/retweet`, {
+  fetch(`/api/posts/${postId}/retweet`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -133,6 +141,29 @@ $(document).on('click', '.retweetButton', (event) => {
     .catch((err) => console.log(err));
 });
 
+$(document).on('click', '.post', (event) => {
+  const element = $(event.target);
+  const postId = getPostIdFromElemet(element);
+
+  if (postId === undefined) return;
+
+  if (!element.is('button')) window.location.href = '/posts/' + postId;
+  // fetch(`/api/posts/${postId}/retweet`, {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  // })
+  //   .then((response) => response.json())
+  //   .then((postData) => {
+  //     console.log('AFTER RETWEET/UNRETWEET', postData);
+  //     console.log(userLoggedIn.retweetedPosts);
+  //     element.toggleClass('active');
+  //     element.find('span').text(postData.retweetedBy.length || '');
+  //   })
+  //   .catch((err) => console.log(err));
+});
+
 function getPostIdFromElemet(element) {
   const isRoot = element.hasClass('post');
   let postId = undefined;
@@ -145,8 +176,11 @@ function getPostIdFromElemet(element) {
   return postId;
 }
 
-function createPostHtml(postData) {
+function createPostHtml(postData, largeFont = false) {
+  
   if (postData == null) return alert('post object is null');
+  
+  let largeClass = largeFont ? 'largeFont' : '';
 
   let isRetweet = postData.parentTweetId !== null;
   let retweetedBy = isRetweet ? postData.postedBy.username : null;
@@ -162,18 +196,18 @@ function createPostHtml(postData) {
                           Retweeted By  <a href="/profile/${retweetedBy}"> @${retweetedBy}</a> 
                         </span>`;
 
+                        
   let replyBlockText = '';
   let isReply = postData.replyToId !== null;
-  let postedByUsername = isReply ? postData.replyedFrom.postedBy.username : '';
-
-  if (isReply) {
+  if (isReply && postData.replyedFrom) { // Also check if replyedFrom is populated [Case When this tweet is a reply to a reply to a reply and so on]
+    let postedByUsername = isReply ? postData.replyedFrom.postedBy.username : '';
     replyBlockText = `<div class="replyBlock">
                         Replying to <a href='/profile/${postedByUsername}'>@${postedByUsername}</a>
                       </div>`;
   }
 
   return `
-    <div class="post" data-id="${postData.id}">
+    <div class="post ${largeClass}" data-id="${postData.id}">
       <div class="retweetBlock">
         ${retweetBlockText}
       </div>
@@ -201,24 +235,22 @@ function createPostHtml(postData) {
             </div>
             <div class="postButtonContainer green">
               <button class="retweetButton ${
-                postData.retweetedBy.some((user) => user.id == userLoggedIn.id)
-                  ? 'active'
-                  : ''
+                // postData.retweetedBy.some((user) => user.id == userLoggedIn.id)
+                postData.isRetweeted ? 'active' : ''
               }">
                 <i class="fas fa-retweet"></i>
                 <span class="retweets">${
-                  postData.retweetedBy.length || ''
+                  postData._count.retweetedBy || ''
                 }</span>
               </button>
             </div>
             <div class="postButtonContainer red">
               <button class="likeButton ${
-                postData.likedBy.some((user) => user.id == userLoggedIn.id)
-                  ? 'active'
-                  : ''
+                // postData.likedBy.some((user) => user.id == userLoggedIn.id)
+                postData.isLiked ? 'active' : ''
               }" >
                 <i class="far fa-heart"></i> 
-                <span class="likes">${postData.likedBy.length || ''}</span>
+                <span class="likes">${postData._count.likedBy || ''}</span>
               </button>
           </div>
     </div>
@@ -253,7 +285,7 @@ function timeDifference(current, previous) {
 
 function showPosts(results, document) {
   document.html('');
-
+  console.log('INSIDE SHOW POSTS', results);
   results.forEach((result) => {
     let html = createPostHtml(result);
     document.append(html);
@@ -262,6 +294,23 @@ function showPosts(results, document) {
   if (results.length == 0) {
     document.append('<span class="noResults">Nothing to show.</span>');
   }
+}
+
+function outputPostsWithReplies(post, container) {
+    container.html('');
+
+    if (post.replyedFrom) {
+      const html = createPostHtml(post.replyedFrom);
+      container.append(html);
+    }
+
+    const mainPostHtml = createPostHtml(post, true);
+    container.append(mainPostHtml);
+
+    post.replies.forEach((reply) => { 
+      const html = createPostHtml(reply);
+      container.append(html);
+    });
 }
 
 // $('#postTextArea').keyup(function (event) {

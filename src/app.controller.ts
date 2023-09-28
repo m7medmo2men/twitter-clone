@@ -28,4 +28,17 @@ export class AppController {
       userLoggedInJs: JSON.stringify(req.session.user),
     };
   }
+
+  @Get('posts/:id')
+  @Render('post')
+  @UseGuards(AuthGuard)
+  renderPostPage(@Req() req) {
+    console.log(req.params.id);
+    return {
+      pageTitle: 'View Post',
+      userLoggedIn: req.session.user,
+      userLoggedInJs: JSON.stringify(req.session.user),
+      postId: req.params.id,
+    };
+  }
 }
