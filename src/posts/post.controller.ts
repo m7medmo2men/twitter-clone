@@ -37,8 +37,11 @@ export class PostController {
   }
 
   @Get('/:postId')
-  getPost(@Param('postId', ParseIntPipe) postId: number) {
-    return this.postService.getPost(postId);
+  getPost(@Param('postId', ParseIntPipe) postId: number,
+    @Session() session: Record<string, any>,
+  ) {
+    const userId = session.user.id;
+    return this.postService.getPost(postId, userId);
   }
 
   @Post()
