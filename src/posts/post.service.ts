@@ -126,12 +126,12 @@ export class PostService {
     };
   }
 
-  async getPost(postId: number) {
+  async getPost(postId: number, userId: number = -1) {
     let post = await this.getAllPostsV2({
       where: {
         id: postId,
       },
-    }, 1);
+    }, userId);
 
     let foundPost = post[0];
 
@@ -146,52 +146,6 @@ export class PostService {
 
     return foundPost;
 
-    // const post = await this.prisma.post.findUnique({
-    //   where: {
-    //     id: postId,
-    //   },
-    //   include: {
-    //     // postedBy: true,
-    //     // likedBy: true,
-    //     // retweets: true,
-    //     // retweetedBy: true,
-    //     // replyedFrom: {
-    //     //   include: {
-    //     //     postedBy: true,
-    //     //     likedBy: true,
-    //     //     retweetedBy: true,
-    //     //   },
-    //     // },
-    //     // postedBy: true,
-    //     // replyedFrom: {
-    //     //   ...this.populateWithPost,
-    //     // },
-    //     // originalTweet: {
-    //     //   ...this.populateWithPost,
-    //     // },
-    //     // likedBy: true,
-    //     // retweetedBy: true,
-    //     // ...this.tweetStats,
-    //   },
-    // });
-
-    const allReplies = await this.prisma.post.findMany({
-      where: {
-        replyToId: postId,
-      },
-      include: {
-        postedBy: true,
-        likedBy: true,
-        retweetedBy: true,
-      },
-    });
-
-    return {
-      postData: post,
-      replies: allReplies,
-    };
-
-    return post;
   }
 
   async createPost(createPostDto: CreatePostDto, userId: number) {
@@ -249,10 +203,6 @@ export class PostService {
       const postAfterRetweet = await this.addRetweet(postId, userId);
 
       return postAfterRetweet;
-      // return {
-      //   updatedPost,
-      //   retweet,
-      // };
     }
   }
 

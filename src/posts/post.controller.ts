@@ -29,8 +29,11 @@ export class PostController {
   ) {}
 
   @Get()
-  getAllPosts() {
-    return this.postService.getAllPostsV2({}, 1);
+  getAllPosts(
+    @Session() session: Record<string, any>,
+  ) {
+    const userId = session.user.id;
+    return this.postService.getAllPostsV2({}, userId);
   }
 
   @Get('/:postId')
