@@ -41,3 +41,8 @@ mixin createDeletePostModal(user)
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button#deletePostButton.btn.btn-primary(type='button') Delete
+
+mixin createFollowButton(user, isFollowing)
+    - text = isFollowing ? 'Following' : 'Follow'
+    - buttonClass = isFollowing ? 'followButton following' : 'followButton'
+    button(class=buttonClass) #{text}

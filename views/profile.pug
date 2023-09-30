@@ -1,0 +1,34 @@
+extends layout/main-layout.pug
+
+block content 
+  if !user
+    h3 Profile Not Found 
+    //- render a mixin that says account not found.
+  else
+    .profileHeaderContainer 
+      .coverPhotoContainer
+        .userImageContainer 
+          img(src=user.profilePicture, alt="")
+      .profileButtonsContainer
+        if user.id != userLoggedIn.id
+          a.profileButton(href=`/messages/${user.username}`)
+            i.fas.fa-envelope
+          +createFollowButton(user, true)
+      .userDetailsContainer
+        span.displayName #{user.firstName} #{user.lastName}
+        span.username @#{user.username}
+
+        .followersContainer
+          a(href=`users/${user.username}/following`) 
+            span.value 0
+            span Following
+
+          a(href=`users/${user.username}/followers`) 
+            span.value 0
+            span Followers
+             
+    .postsContainer
+    +createDeletePostModal(userLoggedIn)
+
+block scripts 
+  script(src='/js/profile.js')

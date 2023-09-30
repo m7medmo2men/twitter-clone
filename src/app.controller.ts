@@ -1,10 +1,13 @@
-import { Get, Controller, Render, Req, UseGuards } from '@nestjs/common';
+import { Get, Controller, Render, Req, UseGuards, Param } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from './auth/auth.gurd';
+import { UserService } from './users/users.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  
+  constructor(private readonly appService: AppService,
+              private readonly userService: UserService) {}
 
   @Get('login')
   @Render('login')
@@ -33,12 +36,48 @@ export class AppController {
   @Render('post')
   @UseGuards(AuthGuard)
   renderPostPage(@Req() req) {
-    console.log(req.params.id);
     return {
       pageTitle: 'View Post',
       userLoggedIn: req.session.user,
       userLoggedInJs: JSON.stringify(req.session.user),
       postId: req.params.id,
+    };
+  }
+
+  @Get('profile/:username')
+  @Render('profile')
+  async renderProfilePage(@Req() req, @Param('username') username: string) {
+    const user = await this.userService.getUserByUsername(username);
+
+    if (user) {
+      return {
+        // pageTitle: 'Profile Page',
+        pageTitle: user.username,
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        profileId: req.params.id,
+        user: user,
+      };
+    } else {
+      return {
+        pageTitle: 'User Not Found',
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        user: user,
+      };
+    }
+  }
+
+  @Get('profile')
+  @Render('profile')
+  @UseGuards(AuthGuard)
+  renderUserProfilePage(@Req() req) {
+    return {
+      pageTitle: req.session.user.username,
+      userLoggedIn: req.session.user,
+      userLoggedInJs: JSON.stringify(req.session.user),
+      // profileId: req.params.id,
+      user: req.session.user,
     };
   }
 }

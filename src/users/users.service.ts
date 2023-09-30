@@ -14,7 +14,22 @@ export class UserService {
         Posts: true,
         likedPosts: true,
         retweetedPosts: true,
+      }, 
+    });
+
+    return user;
+  }
+
+  async getUserByUsername(username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        username
       },
+      include: {
+        Posts: true,
+        likedPosts: true,
+        retweetedPosts: true,
+      }, 
     });
 
     return user;
