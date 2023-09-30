@@ -19,14 +19,17 @@ block content
         span.username @#{user.username}
 
         .followersContainer
-          a(href=`users/${user.username}/following`) 
+          a(href=`/profile/${user.username}/following`) 
             span.value 0
             span Following
 
-          a(href=`users/${user.username}/followers`) 
+          a(href=`/profile/${user.username}/followers`) 
             span.value 0
             span Followers
-             
+      .tabsContainer
+        +createTab('Posts', `/profile/${user.username}`, true)
+        +createTab('Replies', `/profile/${user.username}/replies`, false)
+
     .postsContainer
     +createDeletePostModal(userLoggedIn)
 
