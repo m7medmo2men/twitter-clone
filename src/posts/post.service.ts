@@ -73,9 +73,15 @@ export class PostService {
   async getAllPostsV2(filter: Filter<PostFilterInput>, userId: number = -1) {
 
     const { where } = filter;
+    const { tweetType, ...rest } = where;
+
+    let type = (tweetType === 'reply') ? { not: null } : (tweetType === 'tweet') ? null : rest.replyToId;
 
     let posts: PostInfo[] = await this.prisma.post.findMany({
-      where,
+      where: {
+        ...rest,
+        replyToId: type,
+      },
       include: {
         postedBy: true,
         replyedFrom: {

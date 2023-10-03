@@ -280,7 +280,7 @@ button span {
 .profileButtonsContainer {
   text-align: right;
   padding: var(--spacing);
-  /* min-height: 66px; */
+  min-height: 66px;
 }
 
 .profileButtonsContainer .profileButton,

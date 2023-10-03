@@ -55,8 +55,32 @@ export class AppController {
         pageTitle: user.username,
         userLoggedIn: req.session.user,
         userLoggedInJs: JSON.stringify(req.session.user),
-        profileId: req.params.id,
+        profileUserId: user.id,
         user: user,
+      };
+    } else {
+      return {
+        pageTitle: 'User Not Found',
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        user: user,
+      };
+    }
+  }
+  
+  @Get('profile/:username/replies')
+  @Render('profile')
+  async renderProfilePageWithReplies(@Req() req, @Param('username') username: string) {
+    const user = await this.userService.getUserByUsername(username);
+
+    if (user) {
+      return {
+        pageTitle: user.username,
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        profileUserId: user.id,
+        user: user,
+        selectedTab: 'replies',
       };
     } else {
       return {
@@ -76,7 +100,7 @@ export class AppController {
       pageTitle: req.session.user.username,
       userLoggedIn: req.session.user,
       userLoggedInJs: JSON.stringify(req.session.user),
-      // profileId: req.params.id,
+      profileUserId: req.session.user.id,
       user: req.session.user,
     };
   }

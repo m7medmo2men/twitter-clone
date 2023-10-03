@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
   Req,
   Session,
   UsePipes,
@@ -15,11 +16,14 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UserService } from 'src/users/users.service';
+import { Filter } from 'src/types/Filter';
+import { PostFilterInput } from './types/post.type';
 
 @Controller('api/posts')
 @UsePipes(
   new ValidationPipe({
     whitelist: true,
+    // skipMissingProperties: true,
   }),
 )
 export class PostController {
@@ -31,9 +35,18 @@ export class PostController {
   @Get()
   getAllPosts(
     @Session() session: Record<string, any>,
+    @Query('postedBy', new ParseIntPipe({ optional: true})) postedBy: number,
+    @Query('tweetType') tweetType: 'tweet' | 'reply' | 'both',
   ) {
     const userId = session.user.id;
-    return this.postService.getAllPostsV2({}, userId);
+    const filter: Filter<PostFilterInput> = {
+      where: {
+        userId: postedBy,
+        tweetType: tweetType,
+      }
+    };
+    
+    return this.postService.getAllPostsV2(filter, userId);
   }
 
   @Get('/:postId')

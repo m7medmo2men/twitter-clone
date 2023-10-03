@@ -46,6 +46,7 @@ export type PostFilterInput = {
   userId?: number;
   parentTweetId?: number;
   replyToId?: number;
+  tweetType?: 'tweet' | 'reply' | 'both';
 };
 
 // export type PostDto = Post;
