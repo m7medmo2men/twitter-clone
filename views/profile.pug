@@ -5,6 +5,10 @@ block content
     h3 Profile Not Found 
     //- render a mixin that says account not found.
   else
+    script.
+      var profileUserId = !{profileUserId}
+      var selectedTab = '!{selectedTab}'
+
     .profileHeaderContainer 
       .coverPhotoContainer
         .userImageContainer 
@@ -27,8 +31,8 @@ block content
             span.value 0
             span Followers
       .tabsContainer
-        +createTab('Posts', `/profile/${user.username}`, true)
-        +createTab('Replies', `/profile/${user.username}/replies`, false)
+        +createTab('Posts', `/profile/${user.username}`, selectedTab != 'replies')
+        +createTab('Replies', `/profile/${user.username}/replies`, selectedTab == 'replies')
 
     .postsContainer
     +createDeletePostModal(userLoggedIn)
