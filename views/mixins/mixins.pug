@@ -52,6 +52,9 @@ mixin createImageUploadModal()
                     span(aria-hidden='true') &times;
                 .modal-body
                     input#filePhoto(type="file", name="filePhoto")
+                    
+                    .imagePreviewContainer
+                        img#imagePreview(src="", alt="")
 
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
