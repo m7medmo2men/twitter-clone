@@ -1,33 +1,24 @@
-const submitButton = document.getElementById('submitPostButton');
-const submitReplyButton = document.getElementById('submitReplyButton');
-const textArea = document.getElementById('postTextArea');
-const replytextArea = document.getElementById('replyTextArea');
-const likeButton = document.querySelector('.likeButton');
-
-// $('#postTextArea').keyup(function (event) {
-textArea.addEventListener('input', () => {
-  // let textAreaValue = $('#postTextArea').val();
-  let textAreaValue = textArea.value.trim();
+$('#postTextArea').keyup(function (event) {
+  let textAreaValue = $('#postTextArea').val();
   if (textAreaValue.length > 0) {
-    submitButton.disabled = false;
+    $('#submitPostButton').prop("disabled", false);
   } else {
-    submitButton.disabled = true;
+    $('#submitPostButton').prop("disabled", true);
   }
 });
 
-replytextArea.addEventListener('input', () => {
-  if (replytextArea.value.trim().length > 0) {
-    submitReplyButton.disabled = false;
+$('#replyTextArea').keyup(function (event) {
+  let replyTextAreaValue = $('#replyTextArea').val();
+  if (replyTextAreaValue.length > 0) {
+    $('#submitReplyButton').prop("disabled", false);
   } else {
-    submitReplyButton.disabled = true;
+    $('#submitReplyButton').prop("disabled", true);
   }
 });
 
 
-// $('#submitPostButton').click(() => {
-submitButton.addEventListener('click', () => {
-  // const content = $('#postTextArea').val();
-  const content = textArea.value.trim();
+$('#submitPostButton').click(() => {
+  const content = $('#postTextArea').val();
   const data = {
     content: content,
   };
@@ -44,15 +35,13 @@ submitButton.addEventListener('click', () => {
       const postHtml = createPostHtml(data);
       const postsContainer = document.querySelector('.postsContainer');
       postsContainer.insertAdjacentHTML('afterbegin', postHtml);
-      // $('#postTextArea').val('');
-      // $('#submitPostButton').disabled = true;
-      textArea.value = '';
-      submitButton.disabled = true;
+      $('#postTextArea').val('');
+      $('#submitPostButton').disabled = true;
     })
     .catch((err) => console.log(err));
 });
 
-submitReplyButton.addEventListener('click', () => {
+$('#submitReplyButton').click(() => {
   const postId = $('#submitReplyButton').data().id;
   let payload = {
     content: $('#replyTextArea').val(),
