@@ -26,11 +26,10 @@ export class UserController {
     })
   }))
   async uploadProfilePicture(@UploadedFile() file: Express.Multer.File,
-  //  @Req() req) {
    @Session() session: Record<string, any>) {
     
 
-    const filename = `${session.user.username} - ${Date.now()}.png`;
+    const filename = `${session.user.username} - profile picture - ${Date.now()}.png`;
     const targetPath = `public/uploads/${filename}`;
     const savedFilePath = `/uploads/${filename}`;
     
@@ -38,6 +37,29 @@ export class UserController {
     await this.userService.updateUser(session.user.id, { profilePicture: savedFilePath });
     
     session.user.profilePicture = savedFilePath;
+
+    return;
+  }
+  
+  @Post('/coverPicture')
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FileInterceptor("croppedImage", {
+    storage: diskStorage({
+      destination: "./uploads",
+    })
+  }))
+  async uploadCoverPicture(@UploadedFile() file: Express.Multer.File,
+   @Session() session: Record<string, any>) {
+    
+
+    const filename = `${session.user.username} - cover picture  - ${Date.now()}.png`;
+    const targetPath = `public/uploads/${filename}`;
+    const savedFilePath = `/uploads/${filename}`;
+    
+    fs.renameSync(file.path, targetPath);
+    await this.userService.updateUser(session.user.id, { coverPicture: savedFilePath });
+    
+    session.user.coverPicture = savedFilePath;
 
     return;
   }
