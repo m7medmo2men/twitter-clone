@@ -10,11 +10,18 @@ block content
       var selectedTab = '!{selectedTab}'
 
     .profileHeaderContainer 
-      .coverPhotoContainer
+      .coverPhotoSection
+        .coverPhotoContainer
+          if user.coverPicture
+            img(src=user.coverPicture, alt="")
+          if user.id == userLoggedIn.id
+            button.coverPhotoButton(data-toggle="modal", data-target="#imageUploadModal" data-image-type="coverPhoto")
+              i.fas.fa-camera
+
         .userImageContainer 
           img(src=user.profilePicture, alt="")
           if user.id == userLoggedIn.id
-            button.profilePictureButton(data-toggle="modal", data-target="#imageUploadModal")
+            button.profilePictureButton(data-toggle="modal", data-target="#imageUploadModal" data-image-type="profilePhoto")
               i.fas.fa-camera
       
       .profileButtonsContainer
@@ -22,6 +29,7 @@ block content
           a.profileButton(href=`/messages/${user.username}`)
             i.fas.fa-envelope
           +createFollowButton(user, true)
+
       .userDetailsContainer
         span.displayName #{user.firstName} #{user.lastName}
         span.username @#{user.username}
