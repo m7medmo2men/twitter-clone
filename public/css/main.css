@@ -309,6 +309,11 @@ button span {
   background-color: var(--blueBackground);
 }
 
+.profileButtonsContainer .followButton.following:hover {
+  background-color: var(--lightGrey);
+  color: var(--blue);
+}
+
 .followButton.following {
   background-color: var(--blue);
   color: white;
