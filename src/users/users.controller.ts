@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Post, Req, Session, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Controller, Get, Param, ParseIntPipe, Post, Put, Req, Session, UploadedFile, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserService } from "./users.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -14,8 +14,32 @@ export class UserController {
   @Get('/profile/:id')
   async getUserProfile(
     @Param('id', ParseIntPipe) id: number,
-  ) {
+  ) { 
     return this.userService.getUser(id);
+  }
+
+  @Put('/:userId/follow/:followedUserId')
+  @UseGuards(AuthGuard)
+  async followUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('followedUserId', ParseIntPipe) followedUserId: number,
+    @Session() session: Record<string, any>,
+  ) {
+    await this.userService.followUser(userId, followedUserId);
+    session.user = await this.userService.getUser(userId);
+    return;
+  }
+  
+  @Put('/:userId/unFollow/:followedUserId')
+  @UseGuards(AuthGuard)
+  async unFollowUser(
+    @Param('userId', ParseIntPipe) userId: number,
+    @Param('followedUserId', ParseIntPipe) followedUserId: number,
+    @Session() session: Record<string, any>,
+  ) {
+    await this.userService.unFollowUser(userId, followedUserId);
+    session.user = await this.userService.getUser(userId);
+    return; 
   }
 
   @Post('/profilePicture')
