@@ -91,6 +91,56 @@ export class AppController {
       };
     }
   }
+  
+  @Get('profile/:username/following')
+  @Render('followingNfollowers')
+  async renderFollowingPage(@Req() req, @Param('username') username: string) {
+    const user = await this.userService.getUserByUsername(username);
+
+    if (user) {
+      return {
+        pageTitle: user.username,
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        profileUserId: user.id,
+        user: user,
+        // userJs: JSON.stringify(user),
+        selectedTab: 'following',
+      };
+    } else {
+      return {
+        pageTitle: 'User Not Found',
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        user: user,
+      };
+    }
+  }
+  
+  @Get('profile/:username/followers')
+  @Render('followingNfollowers')
+  async renderFollowersPage(@Req() req, @Param('username') username: string) {
+    const user = await this.userService.getUserByUsername(username);
+
+    if (user) {
+      return {
+        pageTitle: user.username,
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        profileUserId: user.id,
+        user: user,
+        // userJs: JSON.stringify(user),
+        selectedTab: 'followers',
+      };
+    } else {
+      return {
+        pageTitle: 'User Not Found',
+        userLoggedIn: req.session.user,
+        userLoggedInJs: JSON.stringify(req.session.user),
+        user: user,
+      };
+    }
+  }
 
   @Get('profile')
   @Render('profile')

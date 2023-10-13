@@ -76,7 +76,7 @@ export class PostService {
     const { tweetType, ...rest } = where;
 
     let type = (tweetType === 'reply') ? { not: null } : (tweetType === 'tweet') ? null : rest.replyToId;
-
+    
     let posts: PostInfo[] = await this.prisma.post.findMany({
       where: {
         ...rest,
