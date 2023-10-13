@@ -1,0 +1,21 @@
+extends layout/main-layout.pug
+
+block content 
+  if !user
+    h3 Profile Not Found 
+    //- render a mixin that says account not found.
+  else
+    script.
+      var profileUserId = !{profileUserId}
+      var selectedTab = '!{selectedTab}'
+      var userJs = !{JSON.stringify(user)}
+
+      
+    .tabsContainer
+      +createTab('Following', `/profile/${user.username}/following`, selectedTab != 'followers')
+      +createTab('Followers', `/profile/${user.username}/followers`, selectedTab == 'followers')
+
+    .resultsContainer
+
+block scripts 
+  script(src='/js/followingNfollowers.js')

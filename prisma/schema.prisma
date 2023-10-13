@@ -27,6 +27,21 @@ model User {
   Posts          Post[]
   likedPosts     Post[]    @relation("PostLikes")
   retweetedPosts Post[]    @relation("PostRetweets")
+
+  followers      Follows[] @relation("Followers")
+  following      Follows[] @relation("Following")  
+}
+
+model Follows {
+  follower  User     @relation("Followers", fields: [followerId], references: [id])
+  followerId Int
+  following User     @relation("Following", fields: [followingId], references: [id])
+  followingId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([followerId, followingId])
 }
 
 model Post {

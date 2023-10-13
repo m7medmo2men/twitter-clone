@@ -293,8 +293,8 @@ button span {
   min-height: 66px;
 }
 
-.profileButtonsContainer .profileButton,
-.profileButtonsContainer .followButton {
+.profileButton,
+.followButton {
   border: 1px solid var(--blue);
   padding: 5px 15px;
   border-radius: 60px;
@@ -304,9 +304,14 @@ button span {
   /* display: inline-block; */
 }
 
-.profileButtonsContainer .profileButton:hover,
-.profileButtonsContainer .followButton:hover {
+.profileButton:hover,
+.followButton:hover {
   background-color: var(--blueBackground);
+}
+
+.followButton.following:hover {
+  background-color: var(--lightGrey);
+  color: var(--blue);
 }
 
 .followButton.following {
@@ -382,9 +387,24 @@ button span {
   object-fit: cover;
 }
 
-
 #imagePreview {
   width: 100%;
   max-width: 100%;
   display: block;
+}
+
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.resultsContainer .user {
+  display: flex;
+  padding: var(--spacing);
+  border-bottom: 1px solid var(--lightGrey);
+}
+
+.user .userDetailsContainer {
+  padding: 0 var(--spacing);
+  flex: 1;
 }

@@ -8,7 +8,12 @@ block content
     script.
       var profileUserId = !{profileUserId}
       var selectedTab = '!{selectedTab}'
+      //- var profileUser = !{JSON.stringify(user)}
+      //- console.log("User Profile: ", profileUser)
+      //- var isFollowing = profileUser.followers.some((follower) => follower.id == userLoggedIn.id)
+      //- console.log(isFollowing)
 
+    //- #{user.firstName} #{user.lastName} #{user.followers[0].firstName}
     .profileHeaderContainer 
       .coverPhotoSection
         .coverPhotoContainer
@@ -28,7 +33,8 @@ block content
         if user.id != userLoggedIn.id
           a.profileButton(href=`/messages/${user.username}`)
             i.fas.fa-envelope
-          +createFollowButton(user, true)
+          - var isFollowing = user.followers.some((follower) => follower.id == userLoggedIn.id)
+          +createFollowButton(user, isFollowing)
 
       .userDetailsContainer
         span.displayName #{user.firstName} #{user.lastName}
@@ -36,11 +42,11 @@ block content
 
         .followersContainer
           a(href=`/profile/${user.username}/following`) 
-            span.value 0
+            span#followingValue.value #{user._count.following}
             span Following
 
           a(href=`/profile/${user.username}/followers`) 
-            span.value 0
+            span#followersValue.value #{user._count.followers}
             span Followers
       .tabsContainer
         +createTab('Posts', `/profile/${user.username}`, selectedTab != 'replies')

@@ -18,6 +18,7 @@ import { AuthService } from './auth.service';
 import { UserRegistrationDto } from './dto/UserRegistration.dto';
 import { AppController } from 'src/app.controller';
 import { UserLogin } from './dto/UserLogin.dto';
+import { UserService } from 'src/users/users.service';
 
 @Controller('auth')
 @UsePipes(
@@ -26,7 +27,7 @@ import { UserLogin } from './dto/UserLogin.dto';
   }),
 )
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,  private userService: UserService) {}
 
   @Post('login')
   async login(
@@ -35,7 +36,7 @@ export class AuthController {
     @Res() response: any,
   ) {
     const user = await this.authService.login(loginDto);
-    session.user = user;
+    session.user = await this.userService.getUser(user.id);
 
     // Redirect to the home page
     response.redirect('/');

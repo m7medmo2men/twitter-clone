@@ -160,7 +160,57 @@ $(document).on('click', '.post', (event) => {
   if (!element.is('button')) window.location.href = '/posts/' + postId;
 });
 
+$(document).on('click', '.followButton', (event) => {
+  const userId = $(event.target).data("user-id");
+  const isFollowed = $(event.target).hasClass("following");
+  console.log(userId, isFollowed);
+  const route = isFollowed ? `/api/users/${userLoggedIn.id}/unfollow/${userId}` : `/api/users/${userLoggedIn.id}/follow/${userId}`;
+  // console.log();
 
+  $.ajax({
+    url: route,
+    type: 'PUT',
+    success: (data, status, xhr) => {
+      if (status === "success" && xhr.status === 200) {
+        if (isFollowed) {
+          $(event.target).removeClass("following");
+          $(event.target).text("Follow");
+          const followersCount = parseInt($("#followersValue").text());
+          $("#followersValue").text(followersCount - 1);
+        } else {
+          // Following A User
+          $(event.target).addClass("following");
+          $(event.target).text("Following");
+          const followersCount = parseInt($("#followersValue").text());
+          $("#followersValue").text(followersCount + 1);
+        }
+      }
+      
+      // console.log(data);
+      // if (xhr.status === 404) {
+      //   alert("User not found");
+      //   return;
+      // }
+
+      // let difference = 1;
+      // if (isFollowed) {
+      //   $(event.target).removeClass("following");
+      //   $(event.target).text("Follow");
+      //   difference = -1;
+      // } else {
+      //   $(event.target).addClass("following");
+      //   $(event.target).text("Following");
+      // }
+
+      // let followersLabel = $("#followersValue");
+      // if (followersLabel.length != 0) {
+      //   let followersText = followersLabel.text();
+      //   followersText = parseInt(followersText);
+      //   followersLabel.text(followersText + difference);
+      // }
+    }
+  }) 
+});
 
 function getPostIdFromElemet(element) {
   const isRoot = element.hasClass('post');
